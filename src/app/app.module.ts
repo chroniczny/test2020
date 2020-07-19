@@ -13,6 +13,12 @@ import {MatSortModule} from "@angular/material/sort";
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { HomeService } from "./home/home.service";
+import { EffectsModule } from '@ngrx/effects';
+import {StoreModule} from "@ngrx/store";
+import {homeReducer} from "./home/home.reducer";
+import {HomeEffects} from "./home/home.effects";
+import {HomeResolve} from "./home/home.resolve";
 
 @NgModule({
   declarations: [
@@ -30,9 +36,13 @@ import { NavbarComponent } from './navbar/navbar.component';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    StoreModule.forRoot({}),
+    StoreModule.forFeature('users', homeReducer),
+    EffectsModule.forRoot([]),
+    EffectsModule.forFeature([HomeEffects])
   ],
-  providers: [],
+  providers: [HomeService, HomeResolve],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
