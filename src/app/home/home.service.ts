@@ -28,4 +28,19 @@ export class HomeService {
       map(res =>  res['users'])
     );
   }
+
+
+  updateUsers(params):  Observable<User[]> {
+
+    return this.http.get<User[]>('https://69aa6ac7-a007-4a98-bc3c-6d2552a2f53e.mock.pstmn.io/users', {
+      params: new HttpParams()
+        .set('userId', params.userId ? params.userId.toString() : '')
+        .set('filter', params.filter)
+        .set('sortOrder', params.sortOrder)
+        .set('pageNumber', params.pageNumber ? params.pageNumber.toString() : '0')
+        .set('pageSize', params.pageSize ? params.pageSize.toString() : '3')
+    }).pipe(
+      map(res =>  res['users'])
+    );
+  }
 }
