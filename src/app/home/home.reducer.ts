@@ -20,7 +20,8 @@ export const initialState: HomeState = {
     filter: '',
     sortOrder: 'asc',
     pageNumber: 0,
-    pageSize: 3
+    pageSize: 3,
+    sortBy: ''
   }
 };
 

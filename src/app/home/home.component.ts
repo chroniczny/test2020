@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {HomeService} from './home.service';
 import {MatTableDataSource} from "@angular/material/table";
 import {User, HomeState, PageParams} from "./home.model";
@@ -7,14 +7,15 @@ import {Store} from "@ngrx/store";
 import {ActivatedRoute} from "@angular/router";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {GetUsersAction} from "./home.actions";
+import {FilterByParamsAction, GetUsersAction} from "./home.actions";
+
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
 
   public displayedColumns = ['userName', 'name', 'surname', 'email', 'role', 'date', 'enabled', 'actions'];
   public dataSource: MatTableDataSource<User>;
@@ -29,16 +30,13 @@ export class HomeComponent implements OnInit {
     filter: '',
     sortOrder: 'asc',
     pageNumber: 0,
-    pageSize: 3
+    pageSize: 3,
+    sortBy: ''
   };
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-
-  constructor (public route: ActivatedRoute, public store: Store<HomeState>) { }
-
-
+  constructor (public route: ActivatedRoute, public store: Store<HomeState>, public homeService: HomeService) { }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource([]);
@@ -55,13 +53,22 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+
   sortChange($event: {active; direction}) {
-    console.log('SORT event: ', $event);
-    this.pageParams.sortOrder = $event.direction;
+    this.pageParams = {...this.pageParams, sortOrder: $event.direction, sortBy: $event.active};
+    console.log('SORT event PARAMS: ', this.pageParams);
+
+    this.store.dispatch(new FilterByParamsAction(this.pageParams));
   }
 
   onEdit(row) {
     console.log('EDIT row: ', row);
+    // this.homeService.openDialog(true);
+
   }
 
   onDelete(row) {
@@ -71,4 +78,8 @@ export class HomeComponent implements OnInit {
   // loadUsers() {
   //   this.store.dispatch(new GetUsersAction(this.pageParams));
   // }
+
+  public doFilter = (value: string) => {
+    this.dataSource.filter = value.trim().toLocaleLowerCase();
+  }
 }

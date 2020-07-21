@@ -1,3 +1,5 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
 :host {
   box-sizing: border-box;
   display: flex;
@@ -14,7 +16,7 @@
   }
 }
   .content-container {
-    background-color: #f5f5f5;
+    background-color: #ffffff;
     height: auto;
     min-height: calc(100vh - 40px);
     padding: 20px;

@@ -9,6 +9,7 @@ export interface PageParams {
   sortOrder: string;
   pageNumber: number;
   pageSize: number;
+  sortBy?: string;
 }
 
 export interface User {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {HttpParams} from "@angular/common/http";
 import {map} from "rxjs/internal/operators";
 import {User} from "./home.model";
@@ -12,6 +12,7 @@ import {User} from "./home.model";
 
 export class HomeService {
 
+  // public onOpenDialog = new BehaviorSubject<boolean>(opener);
   constructor(private http: HttpClient) { }
 
 
@@ -43,4 +44,8 @@ export class HomeService {
       map(res =>  res['users'])
     );
   }
+
+  // openDialog(open: boolean) {
+  //   this.onOpenDialog.next(open);
+  // }
 }

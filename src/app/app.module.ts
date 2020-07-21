@@ -20,6 +20,9 @@ import {homeReducer} from "./home/home.reducer";
 import {HomeEffects} from "./home/home.effects";
 import {HomeResolve} from "./home/home.resolve";
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatButtonModule} from "@angular/material/button";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,7 +43,15 @@ import {HomeResolve} from "./home/home.resolve";
     StoreModule.forRoot({}),
     StoreModule.forFeature('users', homeReducer),
     EffectsModule.forRoot([]),
-    EffectsModule.forFeature([HomeEffects])
+    EffectsModule.forFeature([HomeEffects]),
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
+  exports: [
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule
   ],
   providers: [HomeService, HomeResolve],
   bootstrap: [AppComponent]
