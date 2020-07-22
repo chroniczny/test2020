@@ -7,7 +7,13 @@ import {Store} from "@ngrx/store";
 import {ActivatedRoute} from "@angular/router";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {AddUserAction, DeleteUserAction, FilterByParamsAction, UpdateUserAction} from "./home.actions";
+import {
+  AddUserAction,
+  DeleteUserAction,
+  FilterByParamsAction,
+  UpdateCollectionAction,
+  UpdateUserAction
+} from "./home.actions";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {EditorDialogComponent} from "../editor-dialog/editor-dialog.component";
 import * as moment from 'moment';
@@ -94,6 +100,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(
       data => {
         data.date = moment(data.date).format('L');
+        data = {...data, blocked: true};
         if (blocked) {
           this.store.dispatch(new UpdateUserAction(data));
         } else {
@@ -113,5 +120,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   public doFilter = (value: string) => {
     this.dataSource.filter = value.trim().toLocaleLowerCase();
+  }
+
+  updateList() {
+    // this.homeService.setUsers(this.dataSource.data);
+    this.store.dispatch(new UpdateCollectionAction(this.dataSource.data));
   }
 }

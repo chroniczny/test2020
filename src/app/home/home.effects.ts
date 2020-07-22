@@ -8,9 +8,14 @@ import {
   SetUsersParamsAction,
   FILTER_BY_PARAMS_ACTION,
   UPDATE_USER_ACTION,
-  UpdateUserAction, ADD_USER_ACTION, AddUserAction, DELETE_USER_ACTION, DeleteUserAction
+  UpdateUserAction,
+  ADD_USER_ACTION,
+  AddUserAction,
+  DELETE_USER_ACTION,
+  DeleteUserAction,
+  UPDATE_COLLECTION_ACTION, UpdateCollectionAction
 } from './home.actions';
-import {map, withLatestFrom, switchMap, catchError} from 'rxjs/internal/operators';
+import {map, withLatestFrom, switchMap, catchError, mergeMap} from 'rxjs/internal/operators';
 import {select, Store} from '@ngrx/store';
 import {HomeService} from './home.service';
 import {getParamsSelector, getUsersSelector} from './home.reducer';
@@ -37,11 +42,25 @@ export class HomeEffects {
   );
 
   @Effect()
+  updateCollection$: Observable<any> = this.actions$.pipe(
+    ofType(UPDATE_COLLECTION_ACTION),
+    map((action: UpdateCollectionAction) => action.payload),
+    mergeMap((payload:User[]) => {
+      return this.homeService.setUsers(payload).pipe(
+        map((response: User[]) => {
+          return new GetUsersSuccessAction(response);
+        }),
+        catchError(error => of(new GetUsersFailureAction(error)))
+      );
+    })
+  );
+
+  @Effect()
   getFilteredUsers$: Observable<any> = this.actions$.pipe(
     ofType(FILTER_BY_PARAMS_ACTION),
     map((action: any) => action.payload),
     withLatestFrom(this.store.pipe(select(getUsersSelector))),
-    map(([payload, usersList]: [PageParams, User[]]) => {
+    mergeMap(([payload, usersList]: [PageParams, User[]]) => {
       const completeParams = payload;
           const sortedUsers = usersList.sort(this.homeService.compareElements(completeParams.sortBy, completeParams.sortOrder))
 
@@ -78,14 +97,12 @@ export class HomeEffects {
     map((action: AddUserAction) => action.payload),
     withLatestFrom(this.store.pipe(select(getUsersSelector))),
     map(([payload, users]: [User, User[]]) => {
-      let extendedUsers;
       const userNamesExisting = users.map(element => element.userName);
       if (!userNamesExisting.includes(payload.userName)) {
-        extendedUsers = [...users, payload];
+        return new GetUsersSuccessAction([...users, payload]);
       } else {
-        extendedUsers = users;
+        return new GetUsersSuccessAction(users);
       }
-      return new GetUsersSuccessAction(extendedUsers);
     }),
     catchError(error => of(new GetUsersFailureAction(error)))
   );

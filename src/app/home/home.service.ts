@@ -27,6 +27,10 @@ export class HomeService {
     );
   }
 
+  setUsers(params):  Observable<User[]> {
+    return this.http.post<User[]>('https://69aa6ac7-a007-4a98-bc3c-6d2552a2f53e.mock.pstmn.io/users', {params});
+  }
+
   compareElements(key: string, order: string = 'asc') {
     return function innerSort(a, b) {
       if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {

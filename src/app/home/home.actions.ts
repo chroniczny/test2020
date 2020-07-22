@@ -9,6 +9,7 @@ export const FILTER_BY_PARAMS_ACTION = 'FILTER_BY_PARAMS_ACTION';
 export const UPDATE_USER_ACTION = 'UPDATE_USER_ACTION';
 export const DELETE_USER_ACTION = 'DELETE_USER_ACTION';
 export const ADD_USER_ACTION = 'ADD_USER_ACTION';
+export const UPDATE_COLLECTION_ACTION = 'UPDATE_COLLECTION_ACTION';
 
 export class GetUsersAction implements Action {
   readonly type = GET_USERS_ACTION;
@@ -58,6 +59,12 @@ export class AddUserAction implements Action {
   constructor (public payload: User){}
 }
 
+export class UpdateCollectionAction implements Action {
+  readonly type = UPDATE_COLLECTION_ACTION;
+
+  constructor (public payload: User[]){}
+}
+
 export type HomeActions = GetUsersAction
   | GetUsersSuccessAction
   | GetUsersFailureAction
@@ -65,4 +72,5 @@ export type HomeActions = GetUsersAction
   | FilterByParamsAction
   | UpdateUserAction
   | DeleteUserAction
-  | AddUserAction;
+  | AddUserAction
+  | UpdateCollectionAction;
