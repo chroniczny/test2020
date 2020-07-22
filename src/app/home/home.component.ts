@@ -7,8 +7,10 @@ import {Store} from "@ngrx/store";
 import {ActivatedRoute} from "@angular/router";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {FilterByParamsAction, GetUsersAction} from "./home.actions";
-
+import {AddUserAction, DeleteUserAction, FilterByParamsAction, UpdateUserAction} from "./home.actions";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {EditorDialogComponent} from "../editor-dialog/editor-dialog.component";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-home',
@@ -36,7 +38,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor (public route: ActivatedRoute, public store: Store<HomeState>, public homeService: HomeService) { }
+  constructor(public route: ActivatedRoute,
+              public store: Store<HomeState>,
+              public homeService: HomeService,
+              private dialog: MatDialog) {
+  }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource([]);
@@ -44,11 +50,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    this.store.select(getUsersSelector).subscribe((users: User[]) =>  {
+    this.store.select(getUsersSelector).subscribe((users: User[]) => {
       this.dataSource.data = users;
     });
 
-    this.store.select(getParamsSelector).subscribe((params: PageParams) =>  {
+    this.store.select(getParamsSelector).subscribe((params: PageParams) => {
       this.pageParams = params;
     });
   }
@@ -58,26 +64,52 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  sortChange($event: {active; direction}) {
+  sortChange($event: { active; direction }) {
     this.pageParams = {...this.pageParams, sortOrder: $event.direction, sortBy: $event.active};
-    console.log('SORT event PARAMS: ', this.pageParams);
-
     this.store.dispatch(new FilterByParamsAction(this.pageParams));
   }
 
   onEdit(row) {
-    console.log('EDIT row: ', row);
-    // this.homeService.openDialog(true);
+    this.openDialog(row);
+  }
 
+  openDialog(row, blocked: boolean = true) {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      date: row.date,
+      email: row.email,
+      enabled: row.enabled,
+      name: row.name,
+      role: row.role,
+      surname: row.surname,
+      userName: row.userName,
+      blocked: blocked
+    };
+
+    this.dialog.open(EditorDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open(EditorDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(
+      data => {
+        data.date = moment(data.date).format('L');
+        if (blocked) {
+          this.store.dispatch(new UpdateUserAction(data));
+        } else {
+          this.store.dispatch(new AddUserAction(data));
+        }
+      }
+    );
+  }
+
+  addUser() {
+    this.openDialog({}, false);
   }
 
   onDelete(row) {
-    console.log('DELETE row: ', row);
+    this.store.dispatch(new DeleteUserAction(row));
   }
-
-  // loadUsers() {
-  //   this.store.dispatch(new GetUsersAction(this.pageParams));
-  // }
 
   public doFilter = (value: string) => {
     this.dataSource.filter = value.trim().toLocaleLowerCase();

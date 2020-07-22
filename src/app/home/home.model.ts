@@ -20,4 +20,5 @@ export interface User {
   role: string;
   date: string;
   enabled: string;
+  blocked?: boolean;
 }

@@ -1,0 +1,68 @@
+<h2 *ngIf="data.blocked" mat-dialog-title>Edit user details of: <b>{{data.userName}}</b></h2>
+<h2 *ngIf="!data.blocked" mat-dialog-title>Add user: </h2>
+<form [formGroup]="editUserForm"
+      class="form-login"
+      ccScrollToFirstInvalidInput
+      (ngSubmit)="save()">
+  <mat-dialog-content>
+    <mat-form-field *ngIf="!data.blocked">
+      <input matInput
+             placeholder="userName"
+             formControlName="userName">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             placeholder="Name"
+             formControlName="name">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             placeholder="Surname"
+             formControlName="surname">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             placeholder="email"
+             formControlName="email">
+    </mat-form-field>
+    <mat-form-field>
+<!--      <input matInput-->
+<!--             placeholder="role"-->
+<!--             formControlName="role">-->
+      <mat-select formControlName="role">
+        <mat-option value="ADMIN">ADMIN</mat-option>
+        <mat-option value="AGENT">AGENT</mat-option>
+        <mat-option value="AUTOR">AUTOR</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             type="date"
+             placeholder="date"
+             formControlName="date">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             placeholder="enabled"
+             formControlName="enabled" hidden>
+      <mat-select formControlName="enabled">
+        <mat-option value="YES">YES</mat-option>
+        <mat-option value="YES">NO</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button
+            color="info-full"
+            mat-dialog-close (click)="close()">Cancel
+    </button>
+    <button mat-raised-button
+            color="primary-full"
+            [mat-dialog-close]="true"
+            (click)="save()">Save changes
+    </button>
+  </mat-dialog-actions>
+</form>

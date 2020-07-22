@@ -3,10 +3,12 @@ import {Effect, ofType, Actions} from '@ngrx/effects';
 import {Observable, of} from 'rxjs';
 import {
   GET_USERS_ACTION,
-  GetUsersAction,
   GetUsersSuccessAction,
   GetUsersFailureAction,
-  SetUsersParamsAction, FILTER_BY_PARAMS_ACTION
+  SetUsersParamsAction,
+  FILTER_BY_PARAMS_ACTION,
+  UPDATE_USER_ACTION,
+  UpdateUserAction, ADD_USER_ACTION, AddUserAction, DELETE_USER_ACTION, DeleteUserAction
 } from './home.actions';
 import {map, withLatestFrom, switchMap, catchError} from 'rxjs/internal/operators';
 import {select, Store} from '@ngrx/store';
@@ -21,10 +23,10 @@ export class HomeEffects {
   @Effect()
   getUsers$: Observable<any> = this.actions$.pipe(
     ofType(GET_USERS_ACTION),
-    map((action: GetUsersAction) => action.payload),
+    map((action: any) => action.payload),
     withLatestFrom(this.store.pipe(select(getParamsSelector))),
     switchMap(([payload, params]: [PageParams, PageParams]) => {
-      const completeParams = { ...params, ...payload };
+      const completeParams = {...params, ...payload};
       return this.homeService.findUsers(completeParams).pipe(
         switchMap((response: any) => {
           return [new GetUsersSuccessAction(response), new SetUsersParamsAction(completeParams)];
@@ -33,23 +35,15 @@ export class HomeEffects {
       );
     })
   );
+
   @Effect()
   getFilteredUsers$: Observable<any> = this.actions$.pipe(
     ofType(FILTER_BY_PARAMS_ACTION),
-    map((action: GetUsersAction) => action.payload),
+    map((action: any) => action.payload),
     withLatestFrom(this.store.pipe(select(getUsersSelector))),
-    switchMap(([payload, users]: [PageParams, User[]]) => {
+    map(([payload, usersList]: [PageParams, User[]]) => {
       const completeParams = payload;
-      return this.homeService.findUsers(completeParams).pipe(
-        switchMap((response: any) => {
-          console.log('FETCHED USERS: ', response);
-
-          const sortedUsers = response.sort(this.compareElements(completeParams.sortBy, completeParams.sortOrder))
-
-
-
-
-
+          const sortedUsers = usersList.sort(this.homeService.compareElements(completeParams.sortBy, completeParams.sortOrder))
 
           return [
             new GetUsersSuccessAction(sortedUsers),
@@ -57,32 +51,57 @@ export class HomeEffects {
           ];
         }),
         catchError(error => of(new GetUsersFailureAction(error)))
-      );
-    })
   );
 
-  compareElements(key: string, order: string = 'asc') {
-    return function innerSort(a, b) {
-      if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-        return 0;
-      }
+  @Effect()
+  updateUserDetails$: Observable<any> = this.actions$.pipe(
+    ofType(UPDATE_USER_ACTION),
+    map((action: UpdateUserAction) => action.payload),
+    withLatestFrom(this.store.pipe(select(getUsersSelector))),
+    map(([payload, users]: [User, User[]]) => {
+      const updatedUsers = users.map(item => {
+        if (item.userName === payload.userName) {
+          return payload;
+        } else {
+          return item;
+        }
+      });
 
-      const varA = (typeof a[key] === 'string')
-        ? a[key].toUpperCase() : a[key];
-      const varB = (typeof b[key] === 'string')
-        ? b[key].toUpperCase() : b[key];
+      return new GetUsersSuccessAction(updatedUsers);
+    }),
+    catchError(error => of(new GetUsersFailureAction(error)))
+  );
 
-      let comparison = 0;
-      if (varA > varB) {
-        comparison = 1;
-      } else if (varA < varB) {
-        comparison = -1;
+  @Effect()
+  addUser$: Observable<any> = this.actions$.pipe(
+    ofType(ADD_USER_ACTION),
+    map((action: AddUserAction) => action.payload),
+    withLatestFrom(this.store.pipe(select(getUsersSelector))),
+    map(([payload, users]: [User, User[]]) => {
+      let extendedUsers;
+      const userNamesExisting = users.map(element => element.userName);
+      if (!userNamesExisting.includes(payload.userName)) {
+        extendedUsers = [...users, payload];
+      } else {
+        extendedUsers = users;
       }
-      return (
-        (order === 'desc') ? (comparison * -1) : comparison
-      );
-    };
-  }
+      return new GetUsersSuccessAction(extendedUsers);
+    }),
+    catchError(error => of(new GetUsersFailureAction(error)))
+  );
+
+  @Effect()
+  deleteUser$: Observable<any> = this.actions$.pipe(
+    ofType(DELETE_USER_ACTION),
+    map((action: DeleteUserAction) => action.payload),
+    withLatestFrom(this.store.pipe(select(getUsersSelector))),
+    map(([payload, users]: [User, User[]]) => {
+      let cutUsers = users.filter(userItem => userItem.userName !== payload.userName);
+
+      return new GetUsersSuccessAction(cutUsers);
+    }),
+    catchError(error => of(new GetUsersFailureAction(error)))
+  );
 
   constructor(
     private actions$: Actions,

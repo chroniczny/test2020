@@ -7,3 +7,13 @@
 mat-paginator {
   margin-bottom: 10px;
 }
+
+.additional-panel {
+  padding: 30px 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  button:last-child {
+    margin-left: 30px;
+  }
+}
