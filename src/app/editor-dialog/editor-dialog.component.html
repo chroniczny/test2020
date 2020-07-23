@@ -26,15 +26,14 @@
              formControlName="email">
     </mat-form-field>
     <mat-form-field>
-<!--      <input matInput-->
-<!--             placeholder="role"-->
-<!--             formControlName="role">-->
+      <mat-label>role</mat-label>
       <mat-select formControlName="role">
         <mat-option value="ADMIN">ADMIN</mat-option>
         <mat-option value="AGENT">AGENT</mat-option>
         <mat-option value="AUTOR">AUTOR</mat-option>
       </mat-select>
     </mat-form-field>
+
     <mat-form-field>
       <input matInput
              type="date"
@@ -42,16 +41,14 @@
              formControlName="date">
     </mat-form-field>
     <mat-form-field>
+      <mat-label>enabled</mat-label>
       <input matInput
-             placeholder="enabled"
              formControlName="enabled" hidden>
       <mat-select formControlName="enabled">
         <mat-option value="YES">YES</mat-option>
         <mat-option value="YES">NO</mat-option>
       </mat-select>
     </mat-form-field>
-
-
   </mat-dialog-content>
 
   <mat-dialog-actions>
