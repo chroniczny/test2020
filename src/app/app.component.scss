@@ -1,4 +1,4 @@
-@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '../@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 :host {
   box-sizing: border-box;
@@ -15,10 +15,10 @@
     background-color: #673ab7;
   }
 }
-  .content-container {
-    background-color: #ffffff;
-    height: auto;
-    min-height: calc(100vh - 40px);
-    padding: 20px;
-  }
 
+.content-container {
+  background-color: #ffffff;
+  height: auto;
+  min-height: calc(100vh - 40px);
+  padding: 20px;
+}

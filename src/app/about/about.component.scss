@@ -1,0 +1,24 @@
+:host, :host .about-content {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .about-content-image {
+    width: 150px;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+  }
+}
+
+h3, h2, h4 {
+  margin: 1rem;
+  text-align: center;
+}
+
+h3:hover {
+  font-weight: bold;
+}
+
